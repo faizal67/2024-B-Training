@@ -1,0 +1,43 @@
+class Solution {
+public:
+    void dfs(string st,string en,double value,double &ans,unordered_map<string,vector<pair<string,double>>> &mp,unordered_map<string,bool> vis){
+        vis[st]=true;
+        if(st==en){
+            ans = value;
+            return;
+        }
+        for(auto it:mp[st]){
+            if(!vis[it.first])
+            dfs(it.first,en,value*it.second,ans,mp,vis);
+        }
+    }
+    
+    vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+       vector<double> sol;
+       unordered_map<string,vector<pair<string,double>>> mp;
+       unordered_map<string,bool> vis;
+       int i=0;
+       for(auto it:equations){   
+           mp[it[0]].push_back({it[0],1});
+           mp[it[1]].push_back({it[1],1});
+           mp[it[0]].push_back({it[1],values[i]});
+           mp[it[1]].push_back({it[0],1/values[i]});
+           i++;
+           vis[it[0]]=false;
+           vis[it[1]]=false;
+       }
+       for(auto x:queries){
+           if(vis.find(x[0])==vis.end() || vis.find(x[1])==vis.end()){
+           sol.push_back(-1);
+           }
+           else
+           {
+                double ans = -1;
+                dfs(x[0],x[1],1,ans,mp,vis);
+                //source,destination,value,ans,map,visarray
+                sol.push_back(ans);
+           }    
+       }
+       return sol;
+    }
+};
